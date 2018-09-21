@@ -1,2 +1,1 @@
-web: python manage.py 
-app: server
+web: gunicorn app:server --timeout 300
