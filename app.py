@@ -13,11 +13,12 @@ app.css.append_css(
 
 app.layout = html.Div([
     html.H2(
-    'Who\'s better? Karissa or Kevin?\nPlease select your answer from below'
+    'Select tickers from dropdown below'
     ),
     dcc.Dropdown(
         id='dropdown',
-        options=[{'label': i, 'value': i} for i in ['Kevin', 'Kevin']],
+        options=[{'label': i, 'value': i} for i in ['AMZN', 'SQUARE', 'LMT', 
+        'AAPL', 'MJ', 'CGC', 'ACBFF', 'NFLX', 'TESLA', 'ZBRA', 'MU']],
         value='Select an answer'
     ),
     html.Div(id='display-value')
@@ -27,6 +28,7 @@ app.layout = html.Div([
               [dash.dependencies.Input('dropdown', 'value')])
 def display_value(value):
     return 'You have selected "{}"'.format(value)
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)
