@@ -19,6 +19,7 @@ app.layout = html.Div([
         id='dropdown',
         options=[{'label': i, 'value': i} for i in ['AMZN', 'SQUARE', 'LMT', 
         'AAPL', 'MJ', 'CGC', 'ACBFF', 'NFLX', 'TESLA', 'ZBRA', 'MU']],
+        multi=True,
         value='Select an answer'
     ),
     html.Div(id='display-value')
