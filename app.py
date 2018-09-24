@@ -4,6 +4,11 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 
+from pandas_datareader.data import get_quote_yahoo
+
+data = get_quote_yahoo('AMZN')
+price = (data['price'])
+
 
 app = dash.Dash(__name__)
 server = app.server
@@ -13,7 +18,8 @@ app.css.append_css(
 
 app.layout = html.Div([
     html.H2(
-    'Select tickers from dropdown below'
+    #'Select tickers from dropdown below'
+    price
     ),
     dcc.Dropdown(
         id='dropdown',
@@ -30,7 +36,7 @@ app.layout = html.Div([
               [dash.dependencies.Input('dropdown', 'value')])
 def display_value(value):
     return 'You have selected "{}"'.format(value)
-
+# display the stock prices for all selected values 
 
 if __name__ == '__main__':
     app.run_server(debug=True)
