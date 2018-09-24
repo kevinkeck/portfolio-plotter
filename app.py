@@ -4,6 +4,7 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 
+import pandas_datareader as pdr
 from pandas_datareader.data import get_quote_yahoo
 
 data = get_quote_yahoo('AMZN')
@@ -19,7 +20,7 @@ app.css.append_css(
 app.layout = html.Div([
     html.H2(
     #'Select tickers from dropdown below'
-    price
+    str('price')
     ),
     dcc.Dropdown(
         id='dropdown',
