@@ -30,9 +30,9 @@ app.layout = html.Div([
     ),        
     html.Div([html.H3('Enter start & end dates:'),
     dcc.DatePickerRange(id='date_picker',
-                        min_date_allowed = dt.datetime(2015,1,1),
+                        min_date_allowed = dt.datetime(2013,9,24),
                         max_date_allowed = dt.datetime.today(),
-                        start_date = dt.datetime(2018, 9, 1),
+                        start_date = dt.datetime(2018, 1, 1),
                         end_date = dt.datetime.today()
 					)
 				], style={'display':'inline-block'}),
@@ -55,7 +55,8 @@ def make_dataframe(ticker_list, start_date, end_date):
         # Needed to reset_index to make date back into a column header
         # Now this is indexed by an id number
         df = pdr.DataReader(ticker.upper(), 'iex', start, end).reset_index()
-        graph_list.append(dcc.Graph(
+        graph_list.append(
+        dcc.Graph(
             id=ticker,
             figure={
                 'data':[
@@ -67,8 +68,17 @@ def make_dataframe(ticker_list, start_date, end_date):
                         close=df.close,
                         increasing=dict(line=dict(color= '#17BECF')),
                         decreasing=dict(line=dict(color= '#7F7F7F')))
-                        ]
-                        }
+                        ],
+                'layout': go.Layout(
+                    title=ticker,
+                    titlefont=dict(size=40),
+                    xaxis=dict(title='Date'),
+                    yaxis=dict(title='Stock Price (USD)')
+                )
+                    
+                    }
+            
+                        
         ))
     print(graph_list)
     return(graph_list)
