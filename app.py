@@ -8,7 +8,7 @@ import plotly.graph_objs as go
 
 import pandas as pd
 import pandas_datareader as pdr
-
+import requests
 
 app = dash.Dash(__name__)
 server = app.server
@@ -18,7 +18,7 @@ app.css.append_css(
 
 app.layout = html.Div([
     html.H1('Portfolio Plotter'),
-    html.H2(
+    html.H3(
     'Select tickers from dropdown below'
     ),
     dcc.Dropdown(
@@ -26,32 +26,41 @@ app.layout = html.Div([
         options=[{'label': i, 'value': i} for i in ['AMZN', 'SQ', 'LMT', 
         'AAPL', 'MJ', 'CGC', 'NFLX', 'TSLA', 'ZBRA', 'MU']],
         multi=True,
-        value=['AMZN']
-    ),        
+        className="twelve columns"
+    ),
     html.Div([html.H3('Enter start & end dates:'),
-    dcc.DatePickerRange(id='date_picker',
+        dcc.DatePickerRange(id='date_picker',
                         min_date_allowed = dt.datetime(2013,9,24),
                         max_date_allowed = dt.datetime.today(),
                         start_date = dt.datetime(2018, 1, 1),
                         end_date = dt.datetime.today()
-					)
-				], style={'display':'inline-block'}),
-    html.Div(id='display_value')
+                        )
+				], 
+                style={'display':'inline-block'}),
+
+    html.H1(id='display_graphs2')
     ])
 
 
-@app.callback(dash.dependencies.Output('display_value', 'children'),
+def get_company(symbol):
+    url = "http://d.yimg.com/autoc.finance.yahoo.com/autoc?query={}&region=1&lang=en".format(symbol)
+
+    result = requests.get(url).json()
+
+    for x in result['ResultSet']['Result']:
+        if x['symbol'] == symbol:
+            return x['name']
+
+
+@app.callback(dash.dependencies.Output('display_graphs2', 'children'),
               [dash.dependencies.Input('dropdown', 'value'),
               dash.dependencies.Input('date_picker', 'start_date'),
               dash.dependencies.Input('date_picker', 'end_date')])
-def make_dataframe(ticker_list, start_date, end_date):
-    # I need to change this to make multiple dataframes. 1 for each ticker.
+def make_graphs(ticker_list, start_date, end_date):
     graph_list = []
     for ticker in ticker_list:
         start= start_date
         end= end_date
-        #end = dt.datetime.today()
-        #start = dt.datetime(2018,1,1)
         # Needed to reset_index to make date back into a column header
         # Now this is indexed by an id number
         df = pdr.DataReader(ticker.upper(), 'iex', start, end).reset_index()
@@ -70,21 +79,25 @@ def make_dataframe(ticker_list, start_date, end_date):
                         decreasing=dict(line=dict(color= '#7F7F7F')))
                         ],
                 'layout': go.Layout(
-                    title=ticker,
+                    title=get_company(ticker) +' ('+ticker+')',
+                    selectdirection='any',
                     titlefont=dict(size=40),
-                    xaxis=dict(title='Date'),
-                    yaxis=dict(title='Stock Price (USD)')
+                    xaxis=dict(
+                        title='Date',
+                        linecolor='black',
+                        linewidth=1,
+                        mirror=True
+                    ),
+                    yaxis=dict(
+                        title='Stock Price (USD)',
+                        linecolor='black',
+                        linewidth=1,
+                        mirror=True
+                    )
                 )
-                    
-                    }
-            
-                        
+            }
         ))
-    print(graph_list)
-    return(graph_list)
-        # I could make a graph using the same function
-        # updated graphs should replace old graphs. 
-        # and when a ticker is removed, the graph should be removed    
+    return(graph_list)  
 
 if __name__ == '__main__':
     app.run_server(debug=True)
